@@ -2,7 +2,7 @@ import React from 'react';
 import { gql } from 'apollo-boost';
 import { Query } from 'react-apollo';
 import RepoTable from './RepoTable';
-import { Link } from 'carbon-components-react';
+import { Link, DataTableSkeleton } from 'carbon-components-react';
 
 const headers = [
   {
@@ -94,7 +94,14 @@ const RepoPage = () => {
         <div className="bx--col-lg-16">
           <Query query={REPO_QUERY}>
             {({ loading, error, data }) => {
-              if (loading) return 'Loading...';
+              if (loading)
+                return (
+                  <DataTableSkeleton
+                    columnCount={headers.length + 1}
+                    rowCount={10}
+                    headers={headers}
+                  />
+                );
 
               if (error) return `Error! ${error.message}`;
 
