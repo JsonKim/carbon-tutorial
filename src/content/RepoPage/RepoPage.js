@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { Query } from 'react-apollo';
 import RepoTable from './RepoTable';
-import { Link, DataTableSkeleton } from 'carbon-components-react';
+import { Link, DataTableSkeleton, Pagination } from 'carbon-components-react';
 
 const headers = [
   {
@@ -88,6 +88,10 @@ const getRowItems = rows =>
   }));
 
 const RepoPage = () => {
+  const [totalItems, setTotalItems] = useState(0);
+  const [firstRowIndex, setFirstRowIndex] = useState(0);
+  const [currentPageSize, setCurrentPageSize] = useState(10);
+
   return (
     <div className="bx--grid bx--grid--full-width bs--grid--no-gutter repo-page">
       <div className="bx--row repo-page__r1">
@@ -106,9 +110,35 @@ const RepoPage = () => {
               if (error) return `Error! ${error.message}`;
 
               const { repositories } = data.organization;
+              setTotalItems(repositories.totalCount);
               const rows = getRowItems(repositories.nodes);
 
-              return <RepoTable headers={headers} rows={rows} />;
+              return (
+                <>
+                  <RepoTable
+                    headers={headers}
+                    rows={rows.slice(
+                      firstRowIndex,
+                      firstRowIndex + currentPageSize
+                    )}
+                  />
+                  <Pagination
+                    totalItems={totalItems}
+                    backwardText="Previous page"
+                    fowardText="Next page"
+                    pageSize={currentPageSize}
+                    pageSizes={[5, 10, 15, 20]}
+                    itemsPerPageText="Items per page"
+                    onChange={({ page, pageSize }) => {
+                      if (pageSize !== currentPageSize) {
+                        setCurrentPageSize(pageSize);
+                      }
+
+                      setFirstRowIndex(pageSize * (page - 1));
+                    }}
+                  />
+                </>
+              );
             }}
           </Query>
         </div>
