@@ -22,8 +22,8 @@ const headers = [
     header: 'Open Issues',
   },
   {
-    key: 'starts',
-    header: 'Starts',
+    key: 'stars',
+    header: 'Stars',
   },
   {
     key: 'links',
